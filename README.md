@@ -56,6 +56,38 @@ Test Suite Coverage Includes:
 * OMS Ping: POST http://localhost:5002/orders/pending-ping (Set Body to raw JSON and paste the Flow 1 payload).
 * Payment Webhook: POST http://localhost:5004/payment-confirmed (Set Body to raw JSON and paste the Flow 2 payload).
 
+OR
+
+## Testing with curl
+the following curl commands to interact with the system.
+
+* Health Check:
+Check the status of the Orchestrator, its internal queue, and its connection to the Inventory Service.
+
+curl http://localhost:5002/health
+(Expected: 200 OK with a JSON payload showing "Healthy" for all dependencies).
+
+* Test Flow 1: OMS Ping (Background Sync)
+Triggers the Orchestrator to wake up, fetch pending orders from the OMS, and allocate inventory in the background without blocking the HTTP request.
+
+curl -X POST http://localhost:5002/orders/pending-ping \
+  -H "Content-Type: application/json" \
+  -d '{"correlationId": "ping-123"}'
+(Expected: Returns 202 Accepted immediately. Check the terminal logs to see the background worker process the orders).
+
+* Test Flow 2: Payment Confirmed (Queue Processing)
+Simulates the Payment Gateway receiving a successful payment. It forwards the payload to the Orchestrator's queue, which is then processed by a background worker to reserve inventory safely using an Idempotency Key.
+
+curl -X POST http://localhost:5004/payment-confirmed \
+  -H "Content-Type: application/json" \
+  -d '{
+        "orderId": "ORD-123", 
+        "customerId": "CUST-1", 
+        "items": ["ITEM-A"], 
+        "total": 99.99, 
+        "paidAt": "2025-01-15T10:30:00Z"
+      }'
+(Expected: Returns 202 Accepted. Watch the Orchestrator terminal to see the message enqueued, dequeued, and sent to the Inventory Service).
 
 ## Technical Notes 
 
