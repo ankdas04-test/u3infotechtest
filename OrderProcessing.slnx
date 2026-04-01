@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="Inventory.Service.Api/Inventory.Service.Api.csproj" />
+  <Project Path="Oms.Api/Oms.Api.csproj" />
+  <Project Path="Order.Orchestrator.Api/Order.Orchestrator.Api.csproj" />
+  <Project Path="Order.Orchestrator.Tests/Order.Orchestrator.Tests.csproj" />
+  <Project Path="Payment.Gateway.Api/Payment.Gateway.Api.csproj" />
+  <Project Path="Shared.Contracts/Shared.Contracts.csproj" />
+</Solution>
